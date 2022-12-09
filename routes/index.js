@@ -1,29 +1,35 @@
 const express = require("express");
-// const ip = require("ip");
-// const moment = require("moment");
-
 const router = express.Router();
+const admin = require('firebase-admin')
 
-// const Index_model = require("../models/Index_model");
+let serviceAccount = require('../(서버 키 경로).json')
 
-// main
-router.get("/", async (req, res) => {
-  let data = [];
-  data["message"] = "hello Rs-Team!!!";
-  data["ifs"] = true;
-  data["fors"] = [
-    { label: 1 },
-    { label: 2 },
-    { label: 3 },
-    { label: 4 },
-    { label: 5 },
-    { label: 6 },
-  ];
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+})
 
-  // const testResult = await Index_model.getUserList();
-  // console.log("testResult => ", testResult);
+router.get("/test", async (req, res, next) => {
+  let target_token =
+    'e2k1ZL3cet-NAHp3gz_wB:BZX12cw23HGnGqSJQLGrazzasdca3tq0JkPKJlTY5cHmylMiR8dAdGAdKi9o_rf9y55H1mmvvAgHj0ZKjZyk23Q_trNrmgQx1A6h3LaoADdlPV-kX5czoDnL1F-gc2DOZJucEmf4To6hje4AfHl'
+	
+  let message = {
+    data: {
+      title: '푸시알림 테스트',
+      body: '푸시알림 테스트합니다.',
+      style: '테스트',
+    },
+    token: target_token,
+  }
 
-  res.render("index", data);
+  admin
+    .messaging()
+    .send(message)
+    .then(function (response) {
+      console.log('Successfully sent message: : ', response)
+    })
+    .catch(function (err) {
+      console.log('Error Sending message!!! : ', err)
+    })
 });
 
 module.exports = router;
